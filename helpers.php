@@ -31,6 +31,51 @@ function getSpecificheProdotto(PDO $pdo, int $idProdotto): array {
     return $specifiche;
 }
 
+/**
+ * Restituisce le recensioni di un prodotto
+ * 
+ * @param PDO $pdo connessione
+ * @param int $idProdotto id del prodotto
+ * @return array elenco recensioni
+ */
+function getRecensioniProdotto(PDO $pdo, int $idProdotto): array {
+    $sql = "
+        SELECT r.voto, r.contenuto, r.data, u.nome
+        FROM recensioni_prodotti r
+        JOIN utenti u ON r.id_utente = u.id
+        WHERE r.id_prodotto = ?
+        ORDER BY r.data DESC
+    ";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$idProdotto]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+/**
+ * Restituisce tutte le recensioni di un venditore
+ */
+function getRecensioniVenditore(PDO $pdo, int $idVenditore): array {
+    $sql = "
+        SELECT r.voto, r.contenuto, u.nome
+        FROM recensioni_venditori r
+        JOIN utenti u ON r.id_utente = u.id
+        WHERE r.id_venditore = ?
+    ";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$idVenditore]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+/**
+ * Inserisce una nuova recensione
+ */
+function aggiungiRecensioneVenditore(PDO $pdo, int $idVenditore, int $idUtente, int $voto, string $commento): bool {
+    $sql = "INSERT INTO recensioni_venditori (id_venditore, id_utente, voto, commento)
+            VALUES (?, ?, ?, ?)";
+    $stmt = $pdo->prepare($sql);
+    return $stmt->execute([$idVenditore, $idUtente, $voto, $commento]);
+}
+
 
 function flash_get($key) {
 if (isset($_SESSION['flash'][$key])) {

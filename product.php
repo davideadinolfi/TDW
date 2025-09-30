@@ -12,6 +12,9 @@ if (!$prodotto) {
     die("Prodotto non trovato");
 }
 $pageTitle = $prodotto['nome'];
+$stmt = $pdo -> prepare("SELECT nome FROM venditori WHERE id = $prodotto[id_venditore]");
+$stmt -> execute();
+$venditore = $stmt -> fetch(PDO::FETCH_ASSOC);
 include 'templates/header.php';
 ?>
 
@@ -32,10 +35,31 @@ include 'templates/header.php';
       echo "</dl>";
     ?>
     <p class="price">€ <?= number_format($prodotto['prezzo'], 2, ',', '.') ?></p>
-    <form action="cart.php" method="post">
+    Venduto da: <a href="vendor.php?id=<?= $prodotto['id_venditore'] ?>"><?= htmlspecialchars($venditore['nome']) ?></a>
+    <form action="carrello.php" method="post">
       <input type="hidden" name="id" value="<?= $prodotto['id'] ?>">
       <button type="submit">Aggiungi al carrello</button>
     </form>
+    <h3>Recensioni</h3>
+
+<?php 
+$recensioni = getRecensioniProdotto($pdo, $id);
+if (count($recensioni) > 0): ?>
+    <ul class="recensioni">
+        <?php foreach ($recensioni as $r): ?>
+            <li>
+                <strong><?= htmlspecialchars($r['nome']) ?></strong> 
+                (<?= $r['voto'] ?>/5 ⭐) 
+                <br>
+                <?= nl2br(htmlspecialchars($r['contenuto'])) ?>
+                <br>
+                <small><?= $r['data'] ?></small>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+<?php else: ?>
+    <p>Nessuna recensione per questo prodotto.</p>
+<?php endif; ?>
   </div>
 </div>
 

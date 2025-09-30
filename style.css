@@ -67,3 +67,17 @@ main {
   margin: 0;
   text-align: left;
 }
+a { 
+  text-decoration: none; 
+  color: blue;
+}
+
+ul.recensioni {
+  list-style: none;
+  padding: 0;
+}
+ul.recensioni li {
+  border-bottom: 1px solid #ddd;
+  margin: 10px 0;
+  padding: 10px 0;
+}
