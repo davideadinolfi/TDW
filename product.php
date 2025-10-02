@@ -36,10 +36,14 @@ include 'templates/header.php';
     ?>
     <p class="price">€ <?= number_format($prodotto['prezzo'], 2, ',', '.') ?></p>
     Venduto da: <a href="vendor.php?id=<?= $prodotto['id_venditore'] ?>"><?= htmlspecialchars($venditore['nome']) ?></a>
-    <form action="carrello.php" method="post">
-      <input type="hidden" name="id" value="<?= $prodotto['id'] ?>">
-      <button type="submit">Aggiungi al carrello</button>
-    </div>
+    <?php if (isset($_SESSION['user_id'])): ?>
+    <form action="resources/aggiungi_carrello.php" method="post">
+        <input type="hidden" name="id_prodotto" value="<?= $prodotto['id'] ?>">
+        <button type="submit" class="btn">Aggiungi al carrello</button>
+    </form>
+<?php else: ?>
+    <p><a href="login.php">Accedi</a> per acquistare.</p>
+<?php endif; ?>
 </div>
     </form>
 <div class ="recensioni_container">

@@ -45,10 +45,11 @@ main {
 .product-detail {
   display: flex;
   max-height: 40vh;
+  width: 40vw;
   gap: 2rem;
 }
 .product-detail img {
-  max-width: 50vh;
+  max-width: 60vh;
   width: auto;
   height: auto;
 }
