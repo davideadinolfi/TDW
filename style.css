@@ -44,10 +44,12 @@ main {
 }
 .product-detail {
   display: flex;
+  max-height: 40vh;
   gap: 2rem;
 }
 .product-detail img {
   max-width: 50vh;
+  width: auto;
   height: auto;
 }
 .price {
@@ -80,4 +82,9 @@ ul.recensioni li {
   border-bottom: 1px solid #ddd;
   margin: 10px 0;
   padding: 10px 0;
+}
+.recensioni_container{
+  margin-top: 20px;
+  padding: 5px;
+  margin-left: 5%;
 }

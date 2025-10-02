@@ -1,5 +1,5 @@
 <?php
-include_once 'helpers.php';
+include_once 'resources/helpers.php';
 // puoi passare il titolo alla pagina
 if (!isset($pageTitle)) $pageTitle = "Il mio shop";
 ?>

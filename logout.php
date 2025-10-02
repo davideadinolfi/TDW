@@ -1,5 +1,5 @@
 <?php
-require_once 'helpers.php';
+require_once 'resources/helpers.php';
 
 
 // distruggo sessione in modo sicuro

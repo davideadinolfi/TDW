@@ -63,5 +63,25 @@ if (count($recensioniVenditore) > 0): ?>
 <?php else: ?>
     <p>Nessuna recensione per questo venditore.</p>
 <?php endif; ?>
+<?php if (isset($_SESSION['user_id'])): ?>
+    <form action="resources/salva_recensione_venditore.php" method="post">
+        <input type="hidden" name="id_venditore" value="<?= $idVenditore ?>">
+        
+        <label for="voto">Voto:</label>
+        <select name="voto" id="voto" required>
+            <option value="">--</option>
+            <?php for ($i=1; $i<=5; $i++): ?>
+                <option value="<?= $i ?>"><?= $i ?></option>
+            <?php endfor; ?>
+        </select>
+        
+        <label for="commento">Commento:</label>
+        <textarea name="commento" id="commento" required></textarea>
+        
+        <button type="submit">Invia recensione</button>
+    </form>
+<?php else: ?>
+    <p><a href="login.php">Accedi</a> per lasciare una recensione.</p>
+<?php endif; ?>
 
 <?php include 'templates/footer.php'; ?>

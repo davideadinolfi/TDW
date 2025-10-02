@@ -67,13 +67,33 @@ function getRecensioniVenditore(PDO $pdo, int $idVenditore): array {
 }
 
 /**
- * Inserisce una nuova recensione
+ * Inserisce una nuova recensione venditore
  */
 function aggiungiRecensioneVenditore(PDO $pdo, int $idVenditore, int $idUtente, int $voto, string $commento): bool {
-    $sql = "INSERT INTO recensioni_venditori (id_venditore, id_utente, voto, commento)
+    $sql = "INSERT INTO recensioni_venditori (id_utente, id_venditore, contenuto, voto)
             VALUES (?, ?, ?, ?)";
     $stmt = $pdo->prepare($sql);
-    return $stmt->execute([$idVenditore, $idUtente, $voto, $commento]);
+    return $stmt->execute([$idUtente, $idVenditore, $commento, $voto]);
+}
+
+/**
+ * Inserisce una recensione (voto + commento) per un prodotto
+ *
+ * @param PDO $pdo
+ * @param int $idProdotto
+ * @param int $idUtente
+ * @param int $voto (1–5)
+ * @param string $commento
+ */
+function aggiungiRecensioneProdotto(PDO $pdo, int $idProdotto, int $idUtente, int $voto, string $commento){
+    // Opzionale: controlli aggiuntivi
+    if ($voto < 1 || $voto > 5) {
+        return false;
+    }
+    $sql = "INSERT INTO recensioni_prodotti (id_utente, id_prodotto, contenuto, voto) 
+            VALUES (?, ?, ?, ?)";
+    $stmt = $pdo->prepare($sql);
+    return $stmt->execute([$idUtente, $idProdotto, $commento, $voto]);
 }
 
 

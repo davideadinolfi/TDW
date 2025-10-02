@@ -1,6 +1,6 @@
 <?php
 require 'config/db.php';
-require_once 'helpers.php';
+require_once 'resources/helpers.php';
 
 
 $errors = [];

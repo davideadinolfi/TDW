@@ -39,10 +39,34 @@ include 'templates/header.php';
     <form action="carrello.php" method="post">
       <input type="hidden" name="id" value="<?= $prodotto['id'] ?>">
       <button type="submit">Aggiungi al carrello</button>
+    </div>
+</div>
     </form>
+<div class ="recensioni_container">
     <h3>Recensioni</h3>
-
-<?php 
+ 
+<?php
+// Assicurati che session sia avviata, che $idProdotto sia definito
+if (isset($_SESSION['user_id'])): ?>
+  <h3>Lascia la tua recensione</h3>
+  <form action="resources/salva_recensione_prodotto.php" method="post">
+    <input type="hidden" name="id_prodotto" value="<?= $id ?>">
+    <label for="voto">Voto (1–5):</label>
+    <select name="voto" id="voto" required>
+      <option value="">--</option>
+      <?php for ($i = 1; $i <= 5; $i++): ?>
+        <option value="<?= $i ?>"><?= $i ?></option>
+      <?php endfor; ?>
+    </select>
+    <br>
+    <label for="commento">Commento:</label><br>
+    <textarea name="commento" id="commento" rows="4" required></textarea><br>
+    <button type="submit">Invia recensione</button>
+  </form>
+<?php else: ?>
+  <p><a href="login.php">Accedi</a> per lasciare una recensione.</p>
+<?php endif; ?>
+<?php
 $recensioni = getRecensioniProdotto($pdo, $id);
 if (count($recensioni) > 0): ?>
     <ul class="recensioni">
@@ -61,6 +85,6 @@ if (count($recensioni) > 0): ?>
     <p>Nessuna recensione per questo prodotto.</p>
 <?php endif; ?>
   </div>
-</div>
+
 
 <?php include 'templates/footer.php'; ?>
