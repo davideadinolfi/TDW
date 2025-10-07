@@ -15,7 +15,8 @@ if (!isset($pageTitle)) $pageTitle = "Il mio shop";
   <header>
     <h1><a href="index.php">myShop</a></h1>
     <nav>
-      <a href="cart.php">Carrello</a>
+      <a href="cart.php">Carrello |</a>
+      <a href="liste.php">Le mie liste</a>
       <?php if (is_logged_in()): ?>
         <div class="user-welcome">Ciao, <?= htmlspecialchars(current_user()['name']) ?> | <a href="logout.php">Logout</a></div>
         <?php else: ?>

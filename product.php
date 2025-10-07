@@ -3,10 +3,15 @@ require 'config/db.php';
 if (!isset($_GET['id'])) {
     header('Location: products.php'); exit;
 }
+session_start();
 $id = (int) $_GET['id'];
 $stmt = $pdo->prepare("SELECT * FROM prodotti WHERE id = ?");
 $stmt->execute([$id]);
 $prodotto = $stmt->fetch(PDO::FETCH_ASSOC);
+$idUtente = $_SESSION['user_id'];
+$stmt = $pdo->prepare("SELECT * FROM liste WHERE id_utente = ?");
+$stmt->execute([$idUtente]);
+$liste = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 if (!$prodotto) {
     die("Prodotto non trovato");
@@ -40,12 +45,33 @@ include 'templates/header.php';
     <form action="resources/aggiungi_carrello.php" method="post">
         <input type="hidden" name="id_prodotto" value="<?= $prodotto['id'] ?>">
         <button type="submit" class="btn">Aggiungi al carrello</button>
+
+
+
     </form>
 <?php else: ?>
     <p><a href="login.php">Accedi</a> per acquistare.</p>
 <?php endif; ?>
 </div>
     </form>
+  
+    <!-- Link per creare una nuova lista -->
+
+            <h3>Aggiungi alla tua lista</h3>
+<form action="resources/aggiungi_a_lista.php" method="post">
+    <input type="hidden" name="id_prodotto" value="<?= $id ?>">
+    
+    <label>Lista:</label>
+    <select name="id_lista" required>
+        <option value="">-- Seleziona una lista --</option>
+        <?php foreach ($liste as $l): ?>
+            <option value="<?= $l['id'] ?>"><?= htmlspecialchars($l['nome']) ?></option>
+        <?php endforeach; ?>
+    </select>
+
+    <button type="submit">Aggiungi</button>
+</form>
+<p><a href="nuovalista.php?redirect=product.php?id=<?= $id ?>">+ Crea nuova lista</a></p>
 <div class ="recensioni_container">
     <h3>Recensioni</h3>
  
