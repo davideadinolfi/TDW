@@ -8,11 +8,12 @@ $id = (int) $_GET['id'];
 $stmt = $pdo->prepare("SELECT * FROM prodotti WHERE id = ?");
 $stmt->execute([$id]);
 $prodotto = $stmt->fetch(PDO::FETCH_ASSOC);
-$idUtente = $_SESSION['user_id'];
-$stmt = $pdo->prepare("SELECT * FROM liste WHERE id_utente = ?");
-$stmt->execute([$idUtente]);
-$liste = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+if(session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['user_id'])) {
+  $idUtente = $_SESSION['user_id'];
+  $stmt = $pdo->prepare("SELECT * FROM liste WHERE id_utente = ?");
+  $stmt->execute([$idUtente]);
+  $liste = $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 if (!$prodotto) {
     die("Prodotto non trovato");
 }
@@ -54,9 +55,9 @@ include 'templates/header.php';
 <?php endif; ?>
 </div>
     </form>
-  
+</div>
     <!-- Link per creare una nuova lista -->
-
+<?php if(session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['user_id'])){ ?>
             <h3>Aggiungi alla tua lista</h3>
 <form action="resources/aggiungi_a_lista.php" method="post">
     <input type="hidden" name="id_prodotto" value="<?= $id ?>">
@@ -72,6 +73,11 @@ include 'templates/header.php';
     <button type="submit">Aggiungi</button>
 </form>
 <p><a href="nuovalista.php?redirect=product.php?id=<?= $id ?>">+ Crea nuova lista</a></p>
+      <?php } 
+      else{
+        echo '<p><a href="login.php">Accedi</a> per aggiungere a una lista.</p>';
+      }
+      ?>
 <div class ="recensioni_container">
     <h3>Recensioni</h3>
  

@@ -28,10 +28,14 @@ session_regenerate_id(true);
 $_SESSION['user_id'] = $user['id'];
 $_SESSION['user_name'] = $user['nome'];
 $_SESSION['user_email'] = $user['email'];
-
-
+$stmt=$pdo->prepare('Select id_gruppo from utenti_gruppi where id_utente=?');
+$stmt->execute([$user['id']]);
+$gruppo=$stmt->fetchAll(PDO::FETCH_COLUMN);
 flash_set('success', 'Login effettuato con successo.');
-header('Location: index.php');
+if($gruppo[0]==1)
+    header('Location: index.php');
+if($gruppo[0]==2)
+    header('Location: admin.php');
 exit;
 } else {
 $errors[] = 'Email o password errata.';

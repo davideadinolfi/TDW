@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Creato il: Ott 07, 2025 alle 18:48
+-- Creato il: Ott 10, 2025 alle 11:07
 -- Versione del server: 9.1.0
 -- Versione PHP: 8.3.14
 
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `caratteristiche` (
   `nome_caratteristica` varchar(64) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id_tipo` (`id_tipo`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dump dei dati per la tabella `caratteristiche`
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS `corrieri` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nome` varchar(64) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dump dei dati per la tabella `corrieri`
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS `gruppi` (
   `nome` varchar(64) NOT NULL,
   `descrizione` varchar(1024) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dump dei dati per la tabella `gruppi`
@@ -102,7 +102,7 @@ CREATE TABLE IF NOT EXISTS `gruppi_servizi` (
   `id_servizio` int NOT NULL,
   PRIMARY KEY (`id_gruppo`,`id_servizio`),
   KEY `id_servizio` (`id_servizio`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dump dei dati per la tabella `gruppi_servizi`
@@ -125,15 +125,7 @@ CREATE TABLE IF NOT EXISTS `item_carrello` (
   PRIMARY KEY (`id`),
   KEY `id_utente` (`id_utente`),
   KEY `id_prodotto` (`id_prodotto`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Dump dei dati per la tabella `item_carrello`
---
-
-INSERT INTO `item_carrello` (`id`, `id_utente`, `id_prodotto`) VALUES
-(2, 1, 1),
-(4, 1, 1);
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -147,16 +139,24 @@ CREATE TABLE IF NOT EXISTS `item_ordini` (
   `id_ordine` int NOT NULL,
   `id_prodotto` int NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `id_ordine` (`id_ordine`),
-  KEY `id_prodotto` (`id_prodotto`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `id_prodotto` (`id_prodotto`),
+  KEY `id_ordine` (`id_ordine`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dump dei dati per la tabella `item_ordini`
 --
 
 INSERT INTO `item_ordini` (`id`, `id_ordine`, `id_prodotto`) VALUES
-(1, 1, 1);
+(1, 1, 1),
+(2, 2, 1),
+(3, 2, 3),
+(4, 2, 1),
+(5, 3, 1),
+(6, 3, 1),
+(7, 4, 3),
+(8, 4, 2),
+(9, 5, 1);
 
 -- --------------------------------------------------------
 
@@ -172,15 +172,15 @@ CREATE TABLE IF NOT EXISTS `liste` (
   `descrizione` varchar(1024) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id_utente` (`id_utente`)
-) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dump dei dati per la tabella `liste`
 --
 
 INSERT INTO `liste` (`id`, `id_utente`, `nome`, `descrizione`) VALUES
-(7, 1, 'lista vuota', 'vuota'),
-(6, 1, 'lista random', 'ciaociao');
+(6, 1, 'lista random', 'ciaociao'),
+(7, 1, 'lista vuota', 'vuota');
 
 -- --------------------------------------------------------
 
@@ -194,9 +194,17 @@ CREATE TABLE IF NOT EXISTS `liste_prodotti` (
   `id_lista` int NOT NULL,
   `id_prodotto` int NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `id_lista` (`id_lista`),
-  KEY `id_prodotto` (`id_prodotto`)
-) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `id_prodotto` (`id_prodotto`),
+  KEY `id_lista` (`id_lista`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dump dei dati per la tabella `liste_prodotti`
+--
+
+INSERT INTO `liste_prodotti` (`id`, `id_lista`, `id_prodotto`) VALUES
+(7, 6, 2),
+(8, 6, 1);
 
 -- --------------------------------------------------------
 
@@ -213,14 +221,18 @@ CREATE TABLE IF NOT EXISTS `ordini` (
   PRIMARY KEY (`id`),
   KEY `id_utente` (`id_utente`),
   KEY `id_corriere` (`id_corriere`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dump dei dati per la tabella `ordini`
 --
 
 INSERT INTO `ordini` (`id`, `id_utente`, `id_corriere`, `created_at`) VALUES
-(1, 1, 2, '2025-10-06 22:24:52');
+(1, 1, 2, '2025-10-06 22:24:52'),
+(2, 1, 2, '2025-10-08 16:14:17'),
+(3, 1, 2, '2025-10-08 16:14:44'),
+(4, 1, 2, '2025-10-08 16:15:10'),
+(5, 1, 1, '2025-10-08 16:15:41');
 
 -- --------------------------------------------------------
 
@@ -238,7 +250,7 @@ CREATE TABLE IF NOT EXISTS `prodotti` (
   `immagine` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id_venditore` (`id_venditore`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dump dei dati per la tabella `prodotti`
@@ -264,9 +276,9 @@ CREATE TABLE IF NOT EXISTS `recensioni_prodotti` (
   `voto` int NOT NULL,
   `data` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `id_utente` (`id_utente`),
-  KEY `id_prodotto` (`id_prodotto`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `id_prodotto` (`id_prodotto`),
+  KEY `id_utente` (`id_utente`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dump dei dati per la tabella `recensioni_prodotti`
@@ -292,7 +304,7 @@ CREATE TABLE IF NOT EXISTS `recensioni_venditori` (
   PRIMARY KEY (`id`),
   KEY `id_utente` (`id_utente`),
   KEY `id_venditore` (`id_venditore`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dump dei dati per la tabella `recensioni_venditori`
@@ -313,7 +325,7 @@ CREATE TABLE IF NOT EXISTS `servizi` (
   `nome` varchar(64) NOT NULL,
   `descrizione` varchar(1024) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dump dei dati per la tabella `servizi`
@@ -338,7 +350,7 @@ CREATE TABLE IF NOT EXISTS `specifiche` (
   PRIMARY KEY (`id`),
   KEY `id_caratteristica` (`id_caratteristica`),
   KEY `id_prodotto` (`id_prodotto`)
-) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dump dei dati per la tabella `specifiche`
@@ -364,7 +376,7 @@ CREATE TABLE IF NOT EXISTS `tipi` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nome` varchar(64) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dump dei dati per la tabella `tipi`
@@ -388,7 +400,7 @@ CREATE TABLE IF NOT EXISTS `utenti` (
   `password` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dump dei dati per la tabella `utenti`
@@ -409,7 +421,7 @@ CREATE TABLE IF NOT EXISTS `utenti_gruppi` (
   `id_gruppo` int NOT NULL,
   PRIMARY KEY (`id_utente`,`id_gruppo`),
   KEY `id_gruppo` (`id_gruppo`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dump dei dati per la tabella `utenti_gruppi`
@@ -429,7 +441,7 @@ CREATE TABLE IF NOT EXISTS `venditori` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nome` varchar(64) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dump dei dati per la tabella `venditori`
@@ -439,6 +451,91 @@ INSERT INTO `venditori` (`id`, `nome`) VALUES
 (1, 'AMD'),
 (2, 'nvidia'),
 (3, 'intel');
+
+--
+-- Limiti per le tabelle scaricate
+--
+
+--
+-- Limiti per la tabella `caratteristiche`
+--
+ALTER TABLE `caratteristiche`
+  ADD CONSTRAINT `caratteristiche_ibfk_1` FOREIGN KEY (`id_tipo`) REFERENCES `tipi` (`id`);
+
+--
+-- Limiti per la tabella `gruppi_servizi`
+--
+ALTER TABLE `gruppi_servizi`
+  ADD CONSTRAINT `gruppi_servizi_ibfk_1` FOREIGN KEY (`id_gruppo`) REFERENCES `gruppi` (`id`),
+  ADD CONSTRAINT `gruppi_servizi_ibfk_2` FOREIGN KEY (`id_servizio`) REFERENCES `servizi` (`id`);
+
+--
+-- Limiti per la tabella `item_carrello`
+--
+ALTER TABLE `item_carrello`
+  ADD CONSTRAINT `item_carrello_ibfk_1` FOREIGN KEY (`id_utente`) REFERENCES `utenti` (`id`),
+  ADD CONSTRAINT `item_carrello_ibfk_2` FOREIGN KEY (`id_prodotto`) REFERENCES `prodotti` (`id`);
+
+--
+-- Limiti per la tabella `item_ordini`
+--
+ALTER TABLE `item_ordini`
+  ADD CONSTRAINT `item_ordini_ibfk_1` FOREIGN KEY (`id_prodotto`) REFERENCES `prodotti` (`id`),
+  ADD CONSTRAINT `item_ordini_ibfk_2` FOREIGN KEY (`id_ordine`) REFERENCES `ordini` (`id`);
+
+--
+-- Limiti per la tabella `liste`
+--
+ALTER TABLE `liste`
+  ADD CONSTRAINT `liste_ibfk_1` FOREIGN KEY (`id_utente`) REFERENCES `utenti` (`id`);
+
+--
+-- Limiti per la tabella `liste_prodotti`
+--
+ALTER TABLE `liste_prodotti`
+  ADD CONSTRAINT `liste_prodotti_ibfk_1` FOREIGN KEY (`id_lista`) REFERENCES `liste` (`id`);
+
+--
+-- Limiti per la tabella `ordini`
+--
+ALTER TABLE `ordini`
+  ADD CONSTRAINT `ordini_ibfk_1` FOREIGN KEY (`id_utente`) REFERENCES `utenti` (`id`),
+  ADD CONSTRAINT `ordini_ibfk_2` FOREIGN KEY (`id_corriere`) REFERENCES `corrieri` (`id`);
+
+--
+-- Limiti per la tabella `prodotti`
+--
+ALTER TABLE `prodotti`
+  ADD CONSTRAINT `prodotti_ibfk_1` FOREIGN KEY (`id_venditore`) REFERENCES `venditori` (`id`),
+  ADD CONSTRAINT `prodotti_ibfk_2` FOREIGN KEY (`id_venditore`) REFERENCES `venditori` (`id`);
+
+--
+-- Limiti per la tabella `recensioni_prodotti`
+--
+ALTER TABLE `recensioni_prodotti`
+  ADD CONSTRAINT `recensioni_prodotti_ibfk_1` FOREIGN KEY (`id_prodotto`) REFERENCES `prodotti` (`id`),
+  ADD CONSTRAINT `recensioni_prodotti_ibfk_2` FOREIGN KEY (`id_utente`) REFERENCES `utenti` (`id`);
+
+--
+-- Limiti per la tabella `recensioni_venditori`
+--
+ALTER TABLE `recensioni_venditori`
+  ADD CONSTRAINT `recensioni_venditori_ibfk_1` FOREIGN KEY (`id_utente`) REFERENCES `utenti` (`id`),
+  ADD CONSTRAINT `recensioni_venditori_ibfk_2` FOREIGN KEY (`id_venditore`) REFERENCES `venditori` (`id`);
+
+--
+-- Limiti per la tabella `specifiche`
+--
+ALTER TABLE `specifiche`
+  ADD CONSTRAINT `specifiche_ibfk_1` FOREIGN KEY (`id_caratteristica`) REFERENCES `caratteristiche` (`id`),
+  ADD CONSTRAINT `specifiche_ibfk_2` FOREIGN KEY (`id_prodotto`) REFERENCES `prodotti` (`id`);
+
+--
+-- Limiti per la tabella `utenti_gruppi`
+--
+ALTER TABLE `utenti_gruppi`
+  ADD CONSTRAINT `utenti_gruppi_ibfk_1` FOREIGN KEY (`id_utente`) REFERENCES `utenti` (`id`),
+  ADD CONSTRAINT `utenti_gruppi_ibfk_2` FOREIGN KEY (`id_gruppo`) REFERENCES `gruppi` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -32,7 +32,9 @@ $errors[] = 'Esiste già un account con questa email.';
 $hash = password_hash($password, PASSWORD_DEFAULT);
 $stmt = $pdo->prepare('INSERT INTO utenti (nome, email, password) VALUES (?, ?, ?)');
 $stmt->execute([$name, $email, $hash]);
-
+$id=$pdo->lastInsertId();
+$stmt = $pdo->prepare('INSERT INTO utenti_gruppi (id_utente, id_gruppo) VALUES (?, ?)');
+$stmt->execute([$id,1]);
 
 flash_set('success', 'Registrazione completata. Ora puoi effettuare il login.');
 header('Location: login.php');
