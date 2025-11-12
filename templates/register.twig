@@ -1,0 +1,48 @@
+{% extends "layout.twig" %}
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+    <h2>Registrati</h2>
+
+    {# VISUALIZZAZIONE MESSAGGIO FLASH #}
+    {% if flash_success %}
+        <p class="success">{{ flash_success }}</p>
+    {% endif %}
+
+    {# VISUALIZZAZIONE ERRORI #}
+    {% if errors is not empty %}
+        <div class="errors">
+            <ul>
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    {# MODULO DI REGISTRAZIONE #}
+    <form method="post" action="register.php">
+        {# Token CSRF #}
+        <input type="hidden" name="csrf" value="{{ csrf_token }}">
+        
+        <label>Nome<br>
+            {# Pre-compila il campo nome #}
+            <input type="text" name="name" value="{{ name_value }}">
+        </label><br>
+        
+        <label>Email<br>
+            {# Pre-compila il campo email #}
+            <input type="email" name="email" value="{{ email_value }}">
+        </label><br>
+        
+        <label>Password<br>
+            <input type="password" name="password">
+        </label><br>
+        
+        <label>Conferma password<br>
+            <input type="password" name="password_confirm">
+        </label><br>
+        
+        <button type="submit">Registrati</button>
+    </form>
+{% endblock %}

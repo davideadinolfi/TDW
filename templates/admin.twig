@@ -1,0 +1,24 @@
+{% extends "layout.twig" %}
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block head %}
+    {{ parent() }}
+    {# Puoi aggiungere stili specifici per l'area admin qui, se necessario #}
+    <link rel="stylesheet" href="assets/css/admin.css">
+{% endblock %}
+
+{% block content %}
+    <h1>Benvenuto nell'area amministratore, {{ username }}</h1>
+    
+    <div class="admin-dashboard">
+        <p>Qui puoi gestire prodotti, utenti, ordini e recensioni.</p>
+        
+        <nav class="admin-menu">
+            <ul>
+                <li><a href="admin/prodotti.php">Gestione Prodotti</a></li>
+                <li><a href="admin/utenti.php">Gestione Utenti</a></li>
+                <li><a href="admin/ordini.php">Gestione Ordini</a></li>
+            </ul>
+        </nav>
+    </div>
+{% endblock %}

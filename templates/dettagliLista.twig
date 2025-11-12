@@ -1,0 +1,47 @@
+{% extends "layout.twig" %}
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+    <h2>{{ lista.nome }}</h2>
+    <p>{{ lista.descrizione }}</p>
+
+    <h3>Prodotti nella lista</h3>
+    
+    {% if prodotti_in_lista is not empty %}
+        <table class="carrello">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Nome Prodotto</th>
+                    <th>Prezzo</th>
+                    <th>Azione</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in prodotti_in_lista %}
+                    <tr>
+                        <td>
+                            <img src="images/{{ item.immagine }}" 
+                                 alt="{{ item.nome }}" width="60">
+                        </td>
+                        <td>
+                            {{ item.nome }}
+                        </td>
+                        <td>
+                            {{ item.prezzo|number_format(2, ',', '.') }} €
+                        </td>
+                        <td>
+                            <a href="resources/rimuovi_da_lista.php?id_lista={{ lista.id }}&id_prodotto={{ item.id }}" 
+                               onclick="return confirm('Sei sicuro di voler rimuovere questo prodotto dalla lista?');">
+                                Rimuovi
+                            </a>  
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Questa lista non contiene ancora prodotti.</p>
+    {% endif %}
+
+{% endblock %}

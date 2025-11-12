@@ -1,16 +1,41 @@
 <?php
-require 'config/db.php';
-include 'templates/header.php';
-$idLista = $_GET['id'] ?? 0;
+// Avvia la sessione se necessario
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
+require_once __DIR__ . '/config/db.php';
+require_once __DIR__ . '/twig_loader.php';
+use Twig\Loader\FilesystemLoader;
+use Twig\Environment;
+// Inizializzo Twig
+$loader = new FilesystemLoader(__DIR__ . '/templates');
+$twig = new Environment($loader, ['cache' => false]);
+
+
+// --- LOGICA DI CONTROLLO E RECUPERO DATI ---
+
+// Controllo sessione (assunto dal codice originale che include l'header)
+if (!isset($_SESSION['user_id'])) {
+    // Gestione tipica: reindirizzamento o errore
+    header('Location: login.php');
+    exit;
+}
+
+$idLista = $_GET['id'] ?? 0;
+$idUtente = $_SESSION['user_id'];
+
+// 1. Recupera i dettagli della lista e verifica l'appartenenza all'utente
 $stmt = $pdo->prepare("SELECT * FROM liste WHERE id = ? AND id_utente = ?");
-$stmt->execute([$idLista, $_SESSION['user_id']]);
+$stmt->execute([$idLista, $idUtente]);
 $lista = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$lista) {
-    die("Lista non trovata");
+    // Se la lista non esiste o non appartiene all'utente
+    die("Lista non trovata o non autorizzata.");
 }
 
+// 2. Recupera i prodotti all'interno della lista
 $stmt = $pdo->prepare("
     SELECT p.*
     FROM liste_prodotti lp
@@ -19,36 +44,16 @@ $stmt = $pdo->prepare("
 $stmt->execute([$idLista]);
 $prodotti = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+// 3. Recupera TUTTI i prodotti (per la funzionalità 'aggiungi a lista' futura, se necessaria)
 $allProducts = $pdo->query("SELECT * FROM prodotti")->fetchAll(PDO::FETCH_ASSOC);
-?>
 
-<h2><?= htmlspecialchars($lista['nome']) ?></h2>
-<p><?= htmlspecialchars($lista['descrizione']) ?></p>
+// Dati da passare a Twig
+$data = [
+    'page_title' => $lista['nome'],
+    'lista' => $lista,
+    'prodotti_in_lista' => $prodotti,
+    'all_products' => $allProducts, // Puoi non passarlo se non lo usi nella vista
+];
 
-<h3>Prodotti nella lista</h3>
-<table class="carrello">
-        <thead>
-        </thead>
-        <tbody>
-            <?php foreach ($prodotti as $item): ?>
-            <tr>
-                <td>
-                    <img src="images/<?= htmlspecialchars($item['immagine']) ?>" 
-                         alt="<?= htmlspecialchars($item['nome']) ?>" width="60">
-                    <td>
-                    <?= htmlspecialchars($item['nome']) ?>
-            </td>
-                </td>
-                <td><?= number_format($item['prezzo'], 2, ',', '.') ?> €</td>
-                <td>
-                  <a href="resources/rimuovi_da_lista.php?id_lista=<?= $lista['id'] ?>&id_prodotto=<?= $item['id'] ?>" 
-   onclick="return confirm('Sei sicuro di voler rimuovere questo prodotto dalla lista?');">
-   Rimuovi
-</a>  
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-
-<?php include 'templates/footer.php';?>
+// --- RENDERING DEL TEMPLATE ---
+echo $twig->render('dettagliLista.twig', $data);

@@ -1,0 +1,44 @@
+{% extends "layout.twig" %}
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+    <h2>{{ page_title }}</h2>
+
+    {% if ordini is not empty %}
+        {# Loop principale sugli ordini #}
+        {% for ordine in ordini %}
+            <div class="ordine">
+                <h3>Ordine #{{ ordine.id }} - {{ ordine.data }}</h3>
+                <p>Corriere: {{ ordine.corriere ?: 'N/D' }}</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Prodotto</th>
+                            <th>Prezzo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {# Loop sui prodotti del singolo ordine #}
+                        {% for prodotto in ordine.prodotti %}
+                            <tr>
+                                <td>
+                                    <img src="images/{{ prodotto.immagine }}" width="50">
+                                    {{ prodotto.nome }}
+                                </td>
+                                <td>{{ prodotto.prezzo|number_format(2, ',', '.') }} €</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+                {# Totale pre-calcolato nel Controller #}
+                <p><strong>Totale ordine:</strong> {{ ordine.totale|number_format(2, ',', '.') }} €</p>
+            </div>
+            <hr>
+        {% endfor %}
+    {% else %}
+        <p>Non hai ancora effettuato ordini.</p>
+    {% endif %}
+
+{% endblock %}

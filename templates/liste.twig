@@ -1,0 +1,30 @@
+{% extends "layout.twig" %}
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+    <h2>{{ page_title }}</h2>
+    <a href="nuovaLista.php">+ Crea nuova lista</a>
+
+    {% if liste is not empty %}
+        <ul>
+            {% for l in liste %}
+                <li>
+                    {# Link alla lista #}
+                    <a href="dettagliLista.php?id={{ l.id }}">
+                        {{ l.nome }}
+                    </a> 
+                    
+                    — {{ l.descrizione }}
+                    
+                    {# Link Elimina con conferma JavaScript #}
+                    (<a href="resources/elimina_lista.php?id={{ l.id }}" 
+                       onclick="return confirm('Eliminare la lista?')">
+                        Elimina
+                    </a>)
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Non hai ancora creato nessuna lista.</p>
+    {% endif %}
+{% endblock %}

@@ -1,8 +1,19 @@
 <?php
-$pageTitle = "Home - Il mio shop";
-include 'templates/header.php';
+
+require_once __DIR__ . '/config/db.php';
+require_once __DIR__ . '/twig_loader.php';
+use Twig\Loader\FilesystemLoader;
+use Twig\Environment;
+// Inizializzo Twig
+$loader = new FilesystemLoader(__DIR__ . '/templates');
+$twig = new Environment($loader, ['cache' => false]);
+
+// Recupero prodotti in evidenza 
+$stmt = $pdo->query("SELECT id, nome, prezzo, immagine, descrizione FROM prodotti LIMIT 3");
+$prodotti = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Passo i dati al template
+echo $twig->render('home.twig', [
+    'page_title' => 'Home - Computer Store',
+    'prodotti' => $prodotti
+]);
 ?>
-<h2>Benvenuto nel nostro e-commerce</h2>
-<p>Qui trovi i migliori prodotti al miglior prezzo.</p>
-<?php include 'products.php'; ?>
-<?php include 'templates/footer.php'; ?>

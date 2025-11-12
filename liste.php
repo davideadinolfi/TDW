@@ -1,24 +1,36 @@
 <?php
-require 'config/db.php';
-include 'templates/header.php';
+// Avvia la sessione se necessario
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+require_once __DIR__ . '/config/db.php';
+require_once __DIR__ . '/twig_loader.php';
+use Twig\Loader\FilesystemLoader;
+use Twig\Environment;
+// Inizializzo Twig
+$loader = new FilesystemLoader(__DIR__ . '/templates');
+$twig = new Environment($loader, ['cache' => false]);
+
+// --- LOGICA DI CONTROLLO E RECUPERO DATI ---
+
+// Controllo sessione (essenziale per recuperare l'ID utente)
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit;
+}
+
 $idUtente = $_SESSION['user_id'];
-$stmt = $pdo->prepare("SELECT * FROM liste WHERE id_utente = ?");
+
+$stmt = $pdo->prepare("SELECT id, nome, descrizione FROM liste WHERE id_utente = ?");
 $stmt->execute([$idUtente]);
 $liste = $stmt->fetchAll(PDO::FETCH_ASSOC);
-?>
 
-<h2>Le tue liste</h2>
-<a href="nuovaLista.php">+ Crea nuova lista</a>
+// Dati da passare a Twig
+$data = [
+    'page_title' => 'Le tue liste',
+    'liste' => $liste,
+];
 
-<ul>
-<?php foreach ($liste as $l): ?>
-    <li>
-        <a href="dettagliLista.php?id=<?= $l['id'] ?>">
-            <?= htmlspecialchars($l['nome']) ?>
-        </a> 
-        — <?= htmlspecialchars($l['descrizione']) ?>
-        (<a href="resources/elimina_lista.php?id=<?= $l['id'] ?>" onclick="return confirm('Eliminare la lista?')">Elimina</a>)
-    </li>
-<?php endforeach; ?>
-</ul>
-<?php include 'templates/footer.php'; ?>
+// --- RENDERING DEL TEMPLATE ---
+echo $twig->render('liste.twig', $data);

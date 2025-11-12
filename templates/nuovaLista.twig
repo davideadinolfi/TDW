@@ -1,0 +1,21 @@
+{% extends "layout.twig" %}
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+    <h2>{{ page_title }}</h2>
+    
+    <form method="post" action="nuovaLista.php">
+        <label>
+            Nome: 
+            {# Puoi usare qui un valore pre-compilato, se passato dal Controller #}
+            <input type="text" name="nome" required>
+        </label><br>
+        
+        <label>
+            Descrizione: 
+            <textarea name="descrizione"></textarea>
+        </label><br>
+        
+        <button type="submit">Crea</button>
+    </form>
+{% endblock %}

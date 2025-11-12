@@ -1,0 +1,25 @@
+{% block title %}Home - Computer Store{% endblock %}
+{% block content %}
+    <section class="tiles">
+        {% if prodotti is not empty %}
+            {% for prodotto in prodotti %}
+                <article>
+                    <span class="image">
+                        <img src="{{"public/images/" ~ prodotto.immagine }}" alt="{{ prodotto.nome }}" />
+                    </span>
+                    <header class="major">
+                        <h3>{{ prodotto.nome }}</h3>
+                        <p><strong>{{ prodotto.prezzo|number_format(2, ',', '.') }} €</strong></p>
+                        <p>{{ prodotto.descrizione|length > 100 ? prodotto.descrizione[:100] ~ '...' : prodotto.descrizione }}</p>
+
+                        <div class="major-actions">
+                            <a href="product.php?id={{ prodotto.id }}" class="button small next">Vedi Prodotto</a>
+                        </div>
+                    </header>
+                </article>
+            {% endfor %}
+        {% else %}
+            <p class="p-4">Nessun prodotto disponibile al momento.</p>
+        {% endif %}
+    </section>
+{% endblock %}

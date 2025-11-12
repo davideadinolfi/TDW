@@ -1,126 +1,74 @@
 <?php
-require 'config/db.php';
+require_once __DIR__ . '/resources/helpers.php';
+require_once __DIR__ . '/config/db.php';
+require_once __DIR__ . '/twig_loader.php';
+use Twig\Loader\FilesystemLoader;
+use Twig\Environment;
+
+// Inizializzazione Twig e caricamento del layout
+$loader = new \Twig\Loader\FilesystemLoader(__DIR__ . '/templates');
+$twig = new \Twig\Environment($loader, ['cache' => false]);
+
+// --- LOGICA DI CONTROLLO E RECUPERO DATI ---
+
+// Avvia la sessione (se non è già attiva)
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Controllo ID Prodotto
 if (!isset($_GET['id'])) {
     header('Location: products.php'); exit;
 }
-session_start();
-$id = (int) $_GET['id'];
+$idProdotto = (int) $_GET['id'];
+
+// Array di dati da passare a Twig
+$data = [];
+$data['is_logged_in'] = isset($_SESSION['user_id']);
+$data['product_id'] = $idProdotto;
+
+// 1. Recupero Prodotto
 $stmt = $pdo->prepare("SELECT * FROM prodotti WHERE id = ?");
-$stmt->execute([$id]);
+$stmt->execute([$idProdotto]);
 $prodotto = $stmt->fetch(PDO::FETCH_ASSOC);
-if(session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['user_id'])) {
-  $idUtente = $_SESSION['user_id'];
-  $stmt = $pdo->prepare("SELECT * FROM liste WHERE id_utente = ?");
-  $stmt->execute([$idUtente]);
-  $liste = $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+
 if (!$prodotto) {
     die("Prodotto non trovato");
 }
-$pageTitle = $prodotto['nome'];
-$stmt = $pdo -> prepare("SELECT nome FROM venditori WHERE id = $prodotto[id_venditore]");
-$stmt -> execute();
-$venditore = $stmt -> fetch(PDO::FETCH_ASSOC);
-include 'templates/header.php';
-?>
+$data['prodotto'] = $prodotto;
+$data['page_title'] = $prodotto['nome'];
 
-<div class="product-detail">
-  <img src="images/<?= htmlspecialchars($prodotto['immagine']) ?>" alt="<?= htmlspecialchars($prodotto['nome']) ?>">
-  <div>
-    <h2><?= htmlspecialchars($prodotto['nome']) ?></h2>
-    <p><?= nl2br(htmlspecialchars($prodotto['descrizione'])) ?></p>
-    <?php
-    
-      $specifiche = getSpecificheProdotto($pdo, $id);
+// 2. Recupero Venditore
+// Nota: La query originale usava $prodotto[id_venditore] senza bind,
+// qui si usa bind o interpolazione sicura per recuperare il nome del venditore.
+$stmt = $pdo->prepare("SELECT nome FROM venditori WHERE id = ?");
+$stmt->execute([$prodotto['id_venditore']]);
+$data['venditore'] = $stmt->fetch(PDO::FETCH_ASSOC);
 
-      echo "<h3>Specifiche prodotto</h3>";
-      echo "<dl class='specifiche'>";
-      foreach ($specifiche as $caratteristica => $valore) {
-          echo "<dt>" . htmlspecialchars($caratteristica) . ":</dt><dd> " . htmlspecialchars($valore) . "</dd>";
-      }
-      echo "</dl>";
-    ?>
-    <p class="price">€ <?= number_format($prodotto['prezzo'], 2, ',', '.') ?></p>
-    Venduto da: <a href="vendor.php?id=<?= $prodotto['id_venditore'] ?>"><?= htmlspecialchars($venditore['nome']) ?></a>
-    <?php if (isset($_SESSION['user_id'])): ?>
-    <form action="resources/aggiungi_carrello.php" method="post">
-        <input type="hidden" name="id_prodotto" value="<?= $prodotto['id'] ?>">
-        <button type="submit" class="btn">Aggiungi al carrello</button>
+// 3. Recupero Specifiche (Assumendo che getSpecificheProdotto esista e sia incluso)
+if (function_exists('getSpecificheProdotto')) {
+    $data['specifiche'] = getSpecificheProdotto($pdo, $idProdotto);
+} else {
+    $data['specifiche'] = []; // Fallback
+}
 
+// 4. Recupero Liste Utente (se loggato)
+$data['liste'] = [];
+if ($data['is_logged_in']) {
+    $idUtente = $_SESSION['user_id'];
+    $stmt = $pdo->prepare("SELECT id, nome FROM liste WHERE id_utente = ?");
+    $stmt->execute([$idUtente]);
+    $data['liste'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
-
-    </form>
-<?php else: ?>
-    <p><a href="login.php">Accedi</a> per acquistare.</p>
-<?php endif; ?>
-</div>
-    </form>
-</div>
-    <!-- Link per creare una nuova lista -->
-<?php if(session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['user_id'])){ ?>
-            <h3>Aggiungi alla tua lista</h3>
-<form action="resources/aggiungi_a_lista.php" method="post">
-    <input type="hidden" name="id_prodotto" value="<?= $id ?>">
-    
-    <label>Lista:</label>
-    <select name="id_lista" required>
-        <option value="">-- Seleziona una lista --</option>
-        <?php foreach ($liste as $l): ?>
-            <option value="<?= $l['id'] ?>"><?= htmlspecialchars($l['nome']) ?></option>
-        <?php endforeach; ?>
-    </select>
-
-    <button type="submit">Aggiungi</button>
-</form>
-<p><a href="nuovalista.php?redirect=product.php?id=<?= $id ?>">+ Crea nuova lista</a></p>
-      <?php } 
-      else{
-        echo '<p><a href="login.php">Accedi</a> per aggiungere a una lista.</p>';
-      }
-      ?>
-<div class ="recensioni_container">
-    <h3>Recensioni</h3>
- 
-<?php
-// Assicurati che session sia avviata, che $idProdotto sia definito
-if (isset($_SESSION['user_id'])): ?>
-  <h3>Lascia la tua recensione</h3>
-  <form action="resources/salva_recensione_prodotto.php" method="post">
-    <input type="hidden" name="id_prodotto" value="<?= $id ?>">
-    <label for="voto">Voto (1–5):</label>
-    <select name="voto" id="voto" required>
-      <option value="">--</option>
-      <?php for ($i = 1; $i <= 5; $i++): ?>
-        <option value="<?= $i ?>"><?= $i ?></option>
-      <?php endfor; ?>
-    </select>
-    <br>
-    <label for="commento">Commento:</label><br>
-    <textarea name="commento" id="commento" rows="4" required></textarea><br>
-    <button type="submit">Invia recensione</button>
-  </form>
-<?php else: ?>
-  <p><a href="login.php">Accedi</a> per lasciare una recensione.</p>
-<?php endif; ?>
-<?php
-$recensioni = getRecensioniProdotto($pdo, $id);
-if (count($recensioni) > 0): ?>
-    <ul class="recensioni">
-        <?php foreach ($recensioni as $r): ?>
-            <li>
-                <strong><?= htmlspecialchars($r['nome']) ?></strong> 
-                (<?= $r['voto'] ?>/5 ⭐) 
-                <br>
-                <?= nl2br(htmlspecialchars($r['contenuto'])) ?>
-                <br>
-                <small><?= $r['data'] ?></small>
-            </li>
-        <?php endforeach; ?>
-    </ul>
-<?php else: ?>
-    <p>Nessuna recensione per questo prodotto.</p>
-<?php endif; ?>
-  </div>
+// 5. Recupero Recensioni (Assumendo che getRecensioniProdotto esista e sia incluso)
+if (function_exists('getRecensioniProdotto')) {
+    $data['recensioni'] = getRecensioniProdotto($pdo, $idProdotto);
+} else {
+    $data['recensioni'] = []; // Fallback
+}
 
 
-<?php include 'templates/footer.php'; ?>
+// --- RENDERING DEL TEMPLATE ---
+
+echo $twig->render('product.twig', $data);

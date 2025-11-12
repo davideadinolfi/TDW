@@ -1,0 +1,70 @@
+{% extends "layout.twig" %}
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+
+    {# Dettagli Venditore #}
+    <div class="venditore">
+        <h2>{{ venditore.nome }}</h2>
+        {% if venditore.email is not empty %}
+            <p><strong>Email:</strong> {{ venditore.email }}</p>
+        {% endif %}
+    </div>
+
+    <hr>
+
+    {# Sezione Prodotti #}
+    <h2>Prodotti</h2>
+    <div class="grid">
+        {% for prodotto in prodotti %}
+            <div class="card">
+                <img src="images/{{ prodotto.immagine }}" alt="{{ prodotto.nome }}">
+                <h3>{{ prodotto.nome }}</h3>
+                <p>€ {{ prodotto.prezzo|number_format(2, ',', '.') }}</p>
+                <a href="product.php?id={{ prodotto.id }}" class="btn">Dettagli</a>
+            </div>
+        {% endfor %}
+    </div>
+
+    {# Sezione Recensioni Venditore #}
+    <h3>Recensioni venditore</h3>
+
+    {% if recensioni_venditore is not empty %}
+        <ul class="recensioni">
+            {% for r in recensioni_venditore %}
+                <li>
+                    <strong>{{ r.nome }}</strong> 
+                    ({{ r.voto }}/5 ⭐) <br>
+                    {# nl2br per i salti di riga #}
+                    {{ r.contenuto|nl2br }}<br>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nessuna recensione per questo venditore.</p>
+    {% endif %}
+
+    {# Form Recensione #}
+    {% if is_logged_in %}
+        <form action="resources/salva_recensione_venditore.php" method="post">
+            <input type="hidden" name="id_venditore" value="{{ venditore.id }}">
+            
+            <label for="voto">Voto:</label>
+            <select name="voto" id="voto" required>
+                <option value="">--</option>
+                {# Loop per le opzioni del voto #}
+                {% for i in 1..5 %}
+                    <option value="{{ i }}">{{ i }}</option>
+                {% endfor %}
+            </select>
+            
+            <label for="commento">Commento:</label>
+            <textarea name="commento" id="commento" required></textarea>
+            
+            <button type="submit">Invia recensione</button>
+        </form>
+    {% else %}
+        <p><a href="login.php">Accedi</a> per lasciare una recensione.</p>
+    {% endif %}
+
+{% endblock %}

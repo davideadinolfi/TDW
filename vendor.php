@@ -1,87 +1,55 @@
 <?php
+// Avvia la sessione se necessario (per controllo login)
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Inclusione librerie come da tua richiesta
 require_once __DIR__ . '/config/db.php';
+require_once __DIR__ . '/twig_loader.php'; 
 
-// Ottieni l'ID venditore da URL
+use Twig\Loader\FilesystemLoader;
+use Twig\Environment;
+
+// Inizializzo Twig
+$loader = new FilesystemLoader(__DIR__ . '/templates');
+$twig = new Environment($loader, ['cache' => false]);
+
+// --- LOGICA DI CONTROLLO E RECUPERO DATI ---
+
 $idVenditore = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$data = [];
+$data['is_logged_in'] = isset($_SESSION['user_id']); // Passa lo stato di login
 
-// Recupero dati venditore
+// 1. Recupero dati venditore
 $stmt = $pdo->prepare("SELECT * FROM venditori WHERE id = ?");
 $stmt->execute([$idVenditore]);
 $venditore = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$venditore) {
-    echo "<h2>Venditore non trovato</h2>";
+    // Gestione errore (muoviamo la visualizzazione degli errori fuori da Twig se usiamo die/exit)
+    echo $twig->render('error.twig', ['message' => "Venditore non trovato"]);
     exit;
 }
+$data['venditore'] = $venditore;
+$data['page_title'] = $venditore['nome'];
 
-// Recupero i prodotti del venditore
+// 2. Recupero i prodotti del venditore
 $stmt = $pdo->prepare("
     SELECT id, nome, prezzo, immagine
     FROM prodotti
     WHERE id_venditore = ?
 ");
 $stmt->execute([$idVenditore]);
-$prodotti = $stmt->fetchAll(PDO::FETCH_ASSOC);
-?>
+$data['prodotti'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-<?php include 'templates/header.php'; ?>
+// 3. Recupero recensioni venditore (Assumendo che getRecensioniVenditore esista e sia incluso)
+if (function_exists('getRecensioniVenditore')) {
+    $data['recensioni_venditore'] = getRecensioniVenditore($pdo, $idVenditore);
+} else {
+    $data['recensioni_venditore'] = []; // Fallback
+}
 
-<div class="venditore">
-    <h2><?= htmlspecialchars($venditore['nome']) ?></h2>
-    <?php if (!empty($venditore['email'])): ?>
-        <p><strong>Email:</strong> <?= htmlspecialchars($venditore['email']) ?></p>
-    <?php endif; ?>
-</div>
 
-<hr>
-
-<h2>Prodotti</h2>
-<div class="grid">
-<?php foreach ($prodotti as $prodotto): ?>
-  <div class="card">
-    <img src="images/<?= htmlspecialchars($prodotto['immagine']) ?>" alt="<?= htmlspecialchars($prodotto['nome']) ?>">
-    <h3><?= htmlspecialchars($prodotto['nome']) ?></h3>
-    <p>€ <?= number_format($prodotto['prezzo'], 2, ',', '.') ?></p>
-    <a href="product.php?id=<?= $prodotto['id'] ?>" class="btn">Dettagli</a>
-  </div>
-<?php endforeach; ?>
-</div>
-<h3>Recensioni venditore</h3>
-
-<?php 
-$recensioniVenditore = getRecensioniVenditore($pdo, $idVenditore);
-if (count($recensioniVenditore) > 0): ?>
-    <ul class="recensioni">
-        <?php foreach ($recensioniVenditore as $r): ?>
-            <li>
-                <strong><?= htmlspecialchars($r['nome']) ?></strong> 
-                (<?= $r['voto'] ?>/5 ⭐) <br>
-                <?= nl2br(htmlspecialchars($r['contenuto'])) ?><br>
-            </li>
-        <?php endforeach; ?>
-    </ul>
-<?php else: ?>
-    <p>Nessuna recensione per questo venditore.</p>
-<?php endif; ?>
-<?php if (isset($_SESSION['user_id'])): ?>
-    <form action="resources/salva_recensione_venditore.php" method="post">
-        <input type="hidden" name="id_venditore" value="<?= $idVenditore ?>">
-        
-        <label for="voto">Voto:</label>
-        <select name="voto" id="voto" required>
-            <option value="">--</option>
-            <?php for ($i=1; $i<=5; $i++): ?>
-                <option value="<?= $i ?>"><?= $i ?></option>
-            <?php endfor; ?>
-        </select>
-        
-        <label for="commento">Commento:</label>
-        <textarea name="commento" id="commento" required></textarea>
-        
-        <button type="submit">Invia recensione</button>
-    </form>
-<?php else: ?>
-    <p><a href="login.php">Accedi</a> per lasciare una recensione.</p>
-<?php endif; ?>
-
-<?php include 'templates/footer.php'; ?>
+// --- RENDERING DEL TEMPLATE ---
+echo $twig->render('vendor.twig', $data);

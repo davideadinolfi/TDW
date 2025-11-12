@@ -1,0 +1,46 @@
+{% extends "layout.twig" %}
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+
+    <h2>{{ page_title }}</h2>
+
+    {% if items is not empty %}
+        <table class="carrello">
+            <thead>
+                <tr>
+                    {# Puoi aggiungere qui le intestazioni della tabella, es. "Prodotto", "Prezzo", "Azione" #}
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                    <tr>
+                        <td>
+                            {# Twig auto-escapes, quindi non serve htmlspecialchars #}
+                             <img src="{{"public/images/" ~ item.immagine }}" alt="{{ item.nome }}" />
+                                alt="{{ item.nome }}" width="60">
+                        </td>
+                        <td>
+                            {{ item.nome }}
+                        </td>
+                        <td>
+                            {# Usa il filtro number_format di Twig #}
+                            {{ item.prezzo|number_format(2, ',', '.') }} €
+                        </td>
+                        <td>
+                            <a href="resources/rimuovi_carrello.php?id={{ item.id_carrello }}" 
+                                class="btn-danger">Rimuovi</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h3>Totale: {{ totale|number_format(2, ',', '.') }} €</h3>
+        <a href="checkout.php" class="btn">Procedi al checkout</a>
+
+    {% else %}
+        <p>Il tuo carrello è vuoto.</p>
+    {% endif %}
+
+{% endblock %}

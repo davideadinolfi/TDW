@@ -1,0 +1,113 @@
+{% extends "layout.twig" %}
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+    <div class="product-detail">
+        <img src="images/{{ "../public/images/" ~prodotto.immagine }}" alt="{{ prodotto.nome }}">
+        
+        <div>
+            <h2>{{ prodotto.nome }}</h2>
+            
+            {# nl2br è sostituito dal filtro 'nl2br' di Twig; Twig auto-escape il contenuto #}
+            <p>{{ prodotto.descrizione|nl2br }}</p>
+
+            {# SEZIONE SPECIFICHE #}
+            {% if specifiche is not empty %}
+                <h3>Specifiche prodotto</h3>
+                <dl class="specifiche">
+                    {# Iterazione sulle specifiche #}
+                    {% for caratteristica, valore in specifiche %}
+                        <dt>{{ caratteristica }}:</dt>
+                        <dd> {{ valore }}</dd>
+                    {% endfor %}
+                </dl>
+            {% endif %}
+
+            <p class="price">€ {{ prodotto.prezzo|number_format(2, ',', '.') }}</p>
+            
+            Venduto da: 
+            <a href="vendor.php?id={{ prodotto.id_venditore }}">
+                {{ venditore.nome }}
+            </a>
+            
+            {# SEZIONE ACQUISTO #}
+            {% if is_logged_in %}
+                <form action="resources/aggiungi_carrello.php" method="post">
+                    <input type="hidden" name="id_prodotto" value="{{ prodotto.id }}">
+                    <button type="submit" class="btn">Aggiungi al carrello</button>
+                </form>
+            {% else %}
+                <p><a href="login.php">Accedi</a> per acquistare.</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="product-actions">
+        {# SEZIONE AGGIUNGI A LISTA #}
+        {% if is_logged_in %}
+            <h3>Aggiungi alla tua lista</h3>
+            <form action="resources/aggiungi_a_lista.php" method="post">
+                <input type="hidden" name="id_prodotto" value="{{ prodotto.id }}">
+                
+                <label>Lista:</label>
+                <select name="id_lista" required>
+                    <option value="">-- Seleziona una lista --</option>
+                    {% for lista in liste %}
+                        <option value="{{ lista.id }}">{{ lista.nome }}</option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit">Aggiungi</button>
+            </form>
+            <p><a href="nuovalista.php?redirect=product.php?id={{ prodotto.id }}">
+                + Crea nuova lista
+            </a></p>
+        {% else %}
+            <p><a href="login.php">Accedi</a> per aggiungere a una lista.</p>
+        {% endif %}
+    </div>
+
+    <div class="recensioni_container">
+        <h3>Recensioni</h3>
+        
+        {# FORM RECENSIONE #}
+        {% if is_logged_in %}
+            <h3>Lascia la tua recensione</h3>
+            <form action="resources/salva_recensione_prodotto.php" method="post">
+                <input type="hidden" name="id_prodotto" value="{{ prodotto.id }}">
+                <label for="voto">Voto (1–5):</label>
+                <select name="voto" id="voto" required>
+                    <option value="">--</option>
+                    {# Uso del loop for Twig per generare le opzioni #}
+                    {% for i in 1..5 %}
+                        <option value="{{ i }}">{{ i }}</option>
+                    {% endfor %}
+                </select>
+                <br>
+                <label for="commento">Commento:</label><br>
+                <textarea name="commento" id="commento" rows="4" required></textarea><br>
+                <button type="submit">Invia recensione</button>
+            </form>
+        {% else %}
+            <p><a href="login.php">Accedi</a> per lasciare una recensione.</p>
+        {% endif %}
+
+        {# ELENCO RECENSIONI #}
+        {% if recensioni is not empty %}
+            <ul class="recensioni">
+                {% for recensione in recensioni %}
+                    <li>
+                        <strong>{{ recensione.nome }}</strong> 
+                        ({{ recensione.voto }}/5 ⭐) 
+                        <br>
+                        {{ recensione.contenuto|nl2br }}
+                        <br>
+                        <small>{{ recensione.data }}</small>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Nessuna recensione per questo prodotto.</p>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,6 +1,19 @@
 <?php
 session_start();
-require_once 'config/db.php';
+
+// Inclusione librerie come da tua richiesta
+require_once __DIR__ . '/config/db.php';
+require_once __DIR__ . '/twig_loader.php'; 
+
+use Twig\Loader\FilesystemLoader;
+use Twig\Environment;
+
+// Inizializzo Twig (necessario per l'output)
+$loader = new FilesystemLoader(__DIR__ . '/templates');
+$twig = new Environment($loader, ['cache' => false]);
+
+
+// --- LOGICA DI CONTROLLO E RECUPERO DATI ---
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
@@ -9,7 +22,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $idUtente = $_SESSION['user_id'];
 
-// Recupera ordini con prodotti
+// Recupera ordini con prodotti (SQL e raggruppamento invariati)
 $sql = "
     SELECT 
         o.id AS id_ordine, 
@@ -30,64 +43,34 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute([$idUtente]);
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Raggruppa per ordine
+// Raggruppa per ordine (Logica essenziale di business/presentazione in PHP)
 $ordini = [];
 foreach ($rows as $row) {
     $id = $row['id_ordine'];
     if (!isset($ordini[$id])) {
+        // Calcolo totale qui per coerenza, sebbene possa essere fatto in Twig
         $ordini[$id] = [
+            'id' => $id, // Aggiunto l'ID per facilità in Twig
             'data' => $row['created_at'],
             'corriere' => $row['corriere'],
-            'prodotti' => []
+            'prodotti' => [],
+            'totale' => 0.0
         ];
     }
     $ordini[$id]['prodotti'][] = [
         'nome' => $row['prodotto'],
-        'prezzo' => $row['prezzo'],
+        'prezzo' => (float)$row['prezzo'],
         'immagine' => $row['immagine']
     ];
+    $ordini[$id]['totale'] += (float)$row['prezzo'];
 }
-?>
 
-<?php include 'templates/header.php'; ?>
+// Dati da passare a Twig
+$data = [
+    'page_title' => 'I miei ordini',
+    // Usiamo array_values per convertire l'array associativo in numerico, più semplice per Twig
+    'ordini' => array_values($ordini),
+];
 
-<h2>I miei ordini</h2>
-
-<?php if (!empty($ordini)): ?>
-    <?php foreach ($ordini as $idOrdine => $ordine): ?>
-        <div class="ordine">
-            <h3>Ordine #<?= $idOrdine ?> - <?= $ordine['data'] ?></h3>
-            <p>Corriere: <?= $ordine['corriere'] ?: 'N/D' ?></p>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>Prodotto</th>
-                        <th>Prezzo</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php 
-                    $totale = 0;
-                    foreach ($ordine['prodotti'] as $prodotto): 
-                        $totale += $prodotto['prezzo'];
-                    ?>
-                        <tr>
-                            <td>
-                                <img src="images/<?= htmlspecialchars($prodotto['immagine']) ?>" width="50">
-                                <?= htmlspecialchars($prodotto['nome']) ?>
-                            </td>
-                            <td><?= number_format($prodotto['prezzo'], 2, ',', '.') ?> €</td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-            <p><strong>Totale ordine:</strong> <?= number_format($totale, 2, ',', '.') ?> €</p>
-        </div>
-        <hr>
-    <?php endforeach; ?>
-<?php else: ?>
-    <p>Non hai ancora effettuato ordini.</p>
-<?php endif; ?>
-
-<?php include 'templates/footer.php'; ?>
+// --- RENDERING DEL TEMPLATE ---
+echo $twig->render('orders.twig', $data);
