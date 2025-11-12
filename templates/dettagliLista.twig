@@ -21,7 +21,7 @@
                 {% for item in prodotti_in_lista %}
                     <tr>
                         <td>
-                            <img src="images/{{ item.immagine }}" 
+                            <img src="{{"public/images/" ~ item.immagine }}" alt="{{ item.nome }}" 
                                  alt="{{ item.nome }}" width="60">
                         </td>
                         <td>

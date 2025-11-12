@@ -23,8 +23,8 @@
                         {% for prodotto in ordine.prodotti %}
                             <tr>
                                 <td>
-                                    <img src="images/{{ prodotto.immagine }}" width="50">
-                                    {{ prodotto.nome }}
+                                    <img src="{{"public/images/" ~ prodotto.immagine }}" alt="{{ prodotto.nome }}" 
+                                 alt="{{ item.nome }}" width="60">
                                 </td>
                                 <td>{{ prodotto.prezzo|number_format(2, ',', '.') }} €</td>
                             </tr>

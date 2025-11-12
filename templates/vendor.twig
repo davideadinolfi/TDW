@@ -15,16 +15,9 @@
 
     {# Sezione Prodotti #}
     <h2>Prodotti</h2>
-    <div class="grid">
-        {% for prodotto in prodotti %}
-            <div class="card">
-                <img src="images/{{ prodotto.immagine }}" alt="{{ prodotto.nome }}">
-                <h3>{{ prodotto.nome }}</h3>
-                <p>€ {{ prodotto.prezzo|number_format(2, ',', '.') }}</p>
-                <a href="product.php?id={{ prodotto.id }}" class="btn">Dettagli</a>
-            </div>
-        {% endfor %}
-    </div>
+
+        {% include 'products.twig' with { 'prodotti': prodotti } %}
+  
 
     {# Sezione Recensioni Venditore #}
     <h3>Recensioni venditore</h3>

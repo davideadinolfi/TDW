@@ -17,8 +17,8 @@
                     <tr>
                         <td>
                             {# Twig auto-escapes, quindi non serve htmlspecialchars #}
-                             <img src="{{"public/images/" ~ item.immagine }}" alt="{{ item.nome }}" />
-                                alt="{{ item.nome }}" width="60">
+                             <img src="{{"public/images/" ~ item.immagine }}" alt="{{ item.nome }}" 
+                                alt="{{ item.nome }}" width="60"/>
                         </td>
                         <td>
                             {{ item.nome }}

@@ -1,12 +1,3 @@
-Certamente. Il codice per la Registrazione mantiene tutta la logica di validazione e inserimento database nel Controller PHP e utilizza Twig solo per visualizzare il modulo, i messaggi di errore e i valori pre-compilati.
-
-Userò la tua struttura di inizializzazione Twig preferita.
-
-1. Il File PHP (Controller)
-Questo file (es. register.php) gestisce l'input del form, la validazione, la logica di business (email unica, hashing password) e il reindirizzamento.
-
-PHP
-
 <?php
 // Avvia la sessione se necessario
 if (session_status() === PHP_SESSION_NONE) {
