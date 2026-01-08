@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Creato il: Ott 10, 2025 alle 11:07
+-- Creato il: Gen 08, 2026 alle 16:24
 -- Versione del server: 9.1.0
 -- Versione PHP: 8.3.14
 
@@ -109,7 +109,8 @@ CREATE TABLE IF NOT EXISTS `gruppi_servizi` (
 --
 
 INSERT INTO `gruppi_servizi` (`id_gruppo`, `id_servizio`) VALUES
-(1, 1);
+(1, 1),
+(2, 2);
 
 -- --------------------------------------------------------
 
@@ -125,7 +126,7 @@ CREATE TABLE IF NOT EXISTS `item_carrello` (
   PRIMARY KEY (`id`),
   KEY `id_utente` (`id_utente`),
   KEY `id_prodotto` (`id_prodotto`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -141,7 +142,7 @@ CREATE TABLE IF NOT EXISTS `item_ordini` (
   PRIMARY KEY (`id`),
   KEY `id_prodotto` (`id_prodotto`),
   KEY `id_ordine` (`id_ordine`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dump dei dati per la tabella `item_ordini`
@@ -156,7 +157,12 @@ INSERT INTO `item_ordini` (`id`, `id_ordine`, `id_prodotto`) VALUES
 (6, 3, 1),
 (7, 4, 3),
 (8, 4, 2),
-(9, 5, 1);
+(9, 5, 1),
+(10, 6, 2),
+(11, 6, 3),
+(12, 7, 2),
+(13, 8, 4),
+(14, 8, 2);
 
 -- --------------------------------------------------------
 
@@ -172,15 +178,15 @@ CREATE TABLE IF NOT EXISTS `liste` (
   `descrizione` varchar(1024) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id_utente` (`id_utente`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dump dei dati per la tabella `liste`
 --
 
 INSERT INTO `liste` (`id`, `id_utente`, `nome`, `descrizione`) VALUES
-(6, 1, 'lista random', 'ciaociao'),
-(7, 1, 'lista vuota', 'vuota');
+(8, 1, 'lista1', 'descrizione lista'),
+(9, 1, 'listatwig', 'ciaooo');
 
 -- --------------------------------------------------------
 
@@ -196,15 +202,14 @@ CREATE TABLE IF NOT EXISTS `liste_prodotti` (
   PRIMARY KEY (`id`),
   KEY `id_prodotto` (`id_prodotto`),
   KEY `id_lista` (`id_lista`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dump dei dati per la tabella `liste_prodotti`
 --
 
 INSERT INTO `liste_prodotti` (`id`, `id_lista`, `id_prodotto`) VALUES
-(7, 6, 2),
-(8, 6, 1);
+(10, 8, 2);
 
 -- --------------------------------------------------------
 
@@ -221,7 +226,7 @@ CREATE TABLE IF NOT EXISTS `ordini` (
   PRIMARY KEY (`id`),
   KEY `id_utente` (`id_utente`),
   KEY `id_corriere` (`id_corriere`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dump dei dati per la tabella `ordini`
@@ -232,7 +237,10 @@ INSERT INTO `ordini` (`id`, `id_utente`, `id_corriere`, `created_at`) VALUES
 (2, 1, 2, '2025-10-08 16:14:17'),
 (3, 1, 2, '2025-10-08 16:14:44'),
 (4, 1, 2, '2025-10-08 16:15:10'),
-(5, 1, 1, '2025-10-08 16:15:41');
+(5, 1, 1, '2025-10-08 16:15:41'),
+(6, 1, 2, '2025-11-12 18:26:47'),
+(7, 1, 1, '2025-11-12 18:27:20'),
+(8, 1, 2, '2025-11-12 21:50:59');
 
 -- --------------------------------------------------------
 
@@ -250,16 +258,17 @@ CREATE TABLE IF NOT EXISTS `prodotti` (
   `immagine` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id_venditore` (`id_venditore`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dump dei dati per la tabella `prodotti`
 --
 
 INSERT INTO `prodotti` (`id`, `id_venditore`, `nome`, `descrizione`, `prezzo`, `immagine`) VALUES
-(1, 3, 'i7 12700k', 'Intel Core i7-12700 processore 25 MB Cache intelligente', 250, '12700k.jpg'),
-(2, 1, 'AMD Ryzen™ 7 5800X', 'AMD Ryzen™ 7 5800X', 225, '51HqC0rU9HL.jpg'),
-(3, 2, 'RTX 5080', 'ASUS PRIME NVIDIA GeForce RTX 5080 OC Edition, Scheda Grafica 16 GB GDDR7, 256 Bit', 1000, '5080.jfif');
+(1, 3, 'i7 10700k', 'Intel Core i7-10700 processore 25 MB Cache intelligente', 250, 'i7.png'),
+(2, 1, 'AMD Ryzen™ 7 5800X', 'AMD Ryzen™ 7 5800X', 225, '51HqC0rU9HL.png'),
+(3, 2, 'RTX 5080', 'ASUS PRIME NVIDIA GeForce RTX 5080 OC Edition, Scheda Grafica 16 GB GDDR7, 256 Bit', 1000, 'msi-geforce-rtx-5080-16g-gaming-trio-oc_1517054_926954.png'),
+(4, 1, 'rx 580', 'Radeon RX 580 GAMING X 8G', 15, 'rx580.png');
 
 -- --------------------------------------------------------
 
@@ -278,14 +287,17 @@ CREATE TABLE IF NOT EXISTS `recensioni_prodotti` (
   PRIMARY KEY (`id`),
   KEY `id_prodotto` (`id_prodotto`),
   KEY `id_utente` (`id_utente`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dump dei dati per la tabella `recensioni_prodotti`
 --
 
 INSERT INTO `recensioni_prodotti` (`id`, `id_utente`, `id_prodotto`, `contenuto`, `voto`, `data`) VALUES
-(1, 1, 2, 'daje', 3, '2025-10-06 20:25:00');
+(1, 1, 2, 'daje', 3, '2025-10-06 20:25:00'),
+(2, 1, 2, 'buono!!!', 5, '2025-11-05 18:58:13'),
+(3, 1, 2, 'fatto con twig', 3, '2025-11-12 16:49:54'),
+(4, 1, 4, 'DAJE', 5, '2025-11-12 20:54:35');
 
 -- --------------------------------------------------------
 
@@ -350,7 +362,7 @@ CREATE TABLE IF NOT EXISTS `specifiche` (
   PRIMARY KEY (`id`),
   KEY `id_caratteristica` (`id_caratteristica`),
   KEY `id_prodotto` (`id_prodotto`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dump dei dati per la tabella `specifiche`
@@ -363,7 +375,10 @@ INSERT INTO `specifiche` (`id`, `id_caratteristica`, `id_prodotto`, `specifica`)
 (4, 2, 2, '95W'),
 (5, 3, 3, '2000mhz'),
 (6, 4, 3, '16GB'),
-(7, 5, 3, 'SI');
+(7, 5, 3, 'SI'),
+(8, 3, 4, '1400mhz'),
+(9, 4, 4, '8GB'),
+(10, 5, 4, 'NO');
 
 -- --------------------------------------------------------
 
@@ -400,14 +415,15 @@ CREATE TABLE IF NOT EXISTS `utenti` (
   `password` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dump dei dati per la tabella `utenti`
 --
 
 INSERT INTO `utenti` (`id`, `email`, `nome`, `password`) VALUES
-(1, 'test@gmail.com', 'test', '$2y$10$3g49wn0R2KVO5oxDuWGGGeztVmLGk6GGCb4THIU/2Nk4hX03p94G2');
+(1, 'test@gmail.com', 'test', '$2y$10$3g49wn0R2KVO5oxDuWGGGeztVmLGk6GGCb4THIU/2Nk4hX03p94G2'),
+(7, 'admin@admin.com', 'admin', '$2y$10$2stNxhfwMhMwUO4/94i4WOkMpvt5EGsdJBglfoeHyKIqLkO7O2g2y');
 
 -- --------------------------------------------------------
 
@@ -428,7 +444,8 @@ CREATE TABLE IF NOT EXISTS `utenti_gruppi` (
 --
 
 INSERT INTO `utenti_gruppi` (`id_utente`, `id_gruppo`) VALUES
-(1, 1);
+(1, 1),
+(7, 2);
 
 -- --------------------------------------------------------
 
