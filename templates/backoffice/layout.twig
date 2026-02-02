@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="" />
+    <meta name="keyword" content="" />
+    <meta name="author" content="" />
+    <title>Duralux || {{ page_title|default('Dashboard') }}</title>
+    <!--! BEGIN: Favicon-->
+    <link rel="shortcut icon" type="image/x-icon" href="Duralux-admin-1.0.0/assets/images/favicon.ico" />
+    <!--! END: Favicon-->
+    <!--! BEGIN: Bootstrap CSS-->
+    <link rel="stylesheet" type="text/css" href="Duralux-admin-1.0.0/assets/css/bootstrap.min.css" />
+    <!--! END: Bootstrap CSS-->
+    <!--! BEGIN: Vendors CSS-->
+    <link rel="stylesheet" type="text/css" href="Duralux-admin-1.0.0/assets/vendors/css/vendors.min.css" />
+    <link rel="stylesheet" type="text/css" href="Duralux-admin-1.0.0/assets/vendors/css/quill.min.css" />
+    <!--! END: Vendors CSS-->
+    <!--! BEGIN: Custom CSS-->
+    <link rel="stylesheet" type="text/css" href="Duralux-admin-1.0.0/assets/css/theme.min.css" />
+    <!--! END: Custom CSS-->
+</head>
+
+<body>
+    <!--! ================================================================ !-->
+    <!--! [Start] Navigation Manu !-->
+    <!--! ================================================================ !-->
+    <nav class="nxl-navigation">
+        <div class="navbar-wrapper">
+            <div class="m-header">
+                <a href="admin.php" class="b-brand">
+                    <!-- ========   change your logo hear   ============ -->
+                    <img src="Duralux-admin-1.0.0/assets/images/logo-full.png" alt="" class="logo logo-lg" />
+                    <img src="Duralux-admin-1.0.0/assets/images/logo-abbr.png" alt="" class="logo logo-sm" />
+                </a>
+            </div>
+            <div class="navbar-content">
+                <ul class="nxl-navbar">
+                    <li class="nxl-item nxl-caption">
+                        <label>Gestione Database</label>
+                    </li>
+                    <li class="nxl-item">
+                        <a href="admin.php" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-airplay"></i></span>
+                            <span class="nxl-mtext">Dashboard</span>
+                        </a>
+                    </li>
+
+                    {% set tables = [
+                        'utenti', 'prodotti', 'ordini', 'caratteristiche', 'corrieri', 
+                        'gruppi', 'liste', 'specifiche', 
+                        'recensioni_prodotti', 'recensioni_venditori', 'servizi', 'tipi', 'venditori'
+                    ] %}
+
+                    {% for table in tables %}
+                    <li class="nxl-item">
+                        <a href="admin.php?entity={{ table }}" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-database"></i></span>
+                            <span class="nxl-mtext">{{ table|capitalize }}</span>
+                        </a>
+                    </li>
+                    {% endfor %}
+
+                    <li class="nxl-item nxl-caption">
+                        <label>Altro</label>
+                    </li>
+                     <li class="nxl-item">
+                        <a href="index.php" class="nxl-link" target="_blank">
+                            <span class="nxl-micon"><i class="feather-globe"></i></span>
+                            <span class="nxl-mtext">Vai al Sito</span>
+                        </a>
+                    </li>
+                    <li class="nxl-item">
+                        <a href="logout.php" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-log-out"></i></span>
+                            <span class="nxl-mtext">Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!--! ================================================================ !-->
+    <!--! [End]  Navigation Manu !-->
+    <!--! ================================================================ !-->
+    <!--! ================================================================ !-->
+    <!--! [Start] Header !-->
+    <!--! ================================================================ !-->
+    <header class="nxl-header">
+        <div class="header-wrapper">
+            <!--! [Start] Header Left !-->
+            <div class="header-left d-flex align-items-center gap-4">
+                <!--! [Start] nxl-head-mobile-toggler !-->
+                <a href="javascript:void(0);" class="nxl-head-mobile-toggler" id="mobile-collapse">
+                    <div class="hamburger hamburger--arrowturn">
+                        <div class="hamburger-box">
+                            <div class="hamburger-inner"></div>
+                        </div>
+                    </div>
+                </a>
+                <!--! [Start] nxl-head-mobile-toggler !-->
+            </div>
+            <!--! [End] Header Left !-->
+            <!--! [Start] Header Right !-->
+            <div class="header-right ms-auto">
+                <div class="d-flex align-items-center">
+                    <div class="dropdown nxl-h-item">
+                        <a href="javascript:void(0);" data-bs-toggle="dropdown" role="button" data-bs-auto-close="outside">
+                            <img src="Duralux-admin-1.0.0/assets/images/avatar/1.png" alt="user-image" class="img-fluid user-avtar me-0" />
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end nxl-h-dropdown nxl-user-dropdown">
+                            <div class="dropdown-header">
+                                <div class="d-flex align-items-center">
+                                    <img src="Duralux-admin-1.0.0/assets/images/avatar/1.png" alt="user-image" class="img-fluid user-avtar" />
+                                    <div>
+                                        <h6 class="text-dark mb-0">{{ username }}</h6>
+                                        <span class="fs-12 fw-medium text-muted">Admin</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="logout.php" class="dropdown-item">
+                                <i class="feather-log-out"></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--! [End] Header Right !-->
+        </div>
+    </header>
+    <!--! ================================================================ !-->
+    <!--! [End] Header !-->
+    <!--! ================================================================ !-->
+    <!--! ================================================================ !-->
+    <!--! [Start] Main Content !-->
+    <!--! ================================================================ !-->
+    <main class="nxl-container">
+        <div class="nxl-content">
+            <!-- [ page-header ] start -->
+            <div class="page-header">
+                <div class="page-header-left d-flex align-items-center">
+                    <div class="page-header-title">
+                        <h5 class="m-b-10">{{ page_title|default('Dashboard') }}</h5>
+                    </div>
+                </div>
+            </div>
+            <!-- [ page-header ] end -->
+
+            <!-- [ Main Content ] start -->
+            <div class="main-content">
+                {% block content %}
+                {% endblock %}
+            </div>
+            <!-- [ Main Content ] end -->
+        </div>
+        <!-- [ Footer ] start -->
+        <footer class="footer">
+            <p class="fs-11 text-muted fw-medium text-uppercase font-monospace mb-0 ps-3">Copyright © 2026 TDW</p>
+        </footer>
+        <!-- [ Footer ] end -->
+    </main>
+    <!--! ================================================================ !-->
+    <!--! [End] Main Content !-->
+    <!--! ================================================================ !-->
+
+    <!--! ================================================================ !-->
+    <!--! [Start] Java Script !-->
+    <!--! ================================================================ !-->
+    <script src="Duralux-admin-1.0.0/assets/vendors/js/vendors.min.js"></script>
+    <script src="Duralux-admin-1.0.0/assets/vendors/js/quill.min.js"></script>
+    <script src="Duralux-admin-1.0.0/assets/js/common-init.min.js"></script>
+    <script src="Duralux-admin-1.0.0/assets/js/theme-customizer-init.min.js"></script>
+    
+    {% block scripts %}
+    {% endblock %}
+    <!--! ================================================================ !-->
+    <!--! [End] Java Script !-->
+    <!--! ================================================================ !-->
+</body>
+
+</html>

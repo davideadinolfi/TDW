@@ -1,0 +1,121 @@
+{% extends 'backoffice/layout.twig' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5>{{ current_action == 'edit' ? 'Modifica' : 'Nuovo' }} {{ current_entity|capitalize }}</h5>
+            </div>
+            <div class="card-body">
+                <form action="admin.php?entity={{ current_entity }}&action=save&id={{ row.id }}" method="POST" enctype="multipart/form-data">
+                    
+                    {% for col in columns %}
+                        {% set colName = col.Field %}
+                        {% set colType = col.Type %}
+                        {% set colKey = col.Key %}
+                        {% set colExtra = col.Extra %}
+                        {% set value = attribute(row, colName) %}
+
+                        {% if colKey == 'PRI' and colExtra == 'auto_increment' %}
+                             {# Skip auto-increment primary keys in form #}
+                        {% else %}
+                            <div class="mb-3">
+                                <label for="{{ colName }}" class="form-label">{{ colName|capitalize }}</label>
+                                
+                                {% if colName == 'immagine' %}
+                                     <input type="file" class="form-control" id="{{ colName }}" name="{{ colName }}" accept="image/*" {{ action == 'create' and col.Null == 'NO' ? 'required' : '' }}>
+                                     {% if value %}
+                                         <div class="mt-2">
+                                             <img src="public/images/{{ value }}" alt="Current Image" style="max-height: 150px;">
+                                             <p class="text-muted small">Attuale: {{ value }}</p>
+                                         </div>
+                                     {% endif %}
+                                {% elseif foreign_keys[colName] is defined %}
+                                     {# Foreign Key Dropdown #}
+                                     <select class="form-select" id="{{ colName }}" name="{{ colName }}" {{ col.Null == 'NO' ? 'required' : '' }}>
+                                         <option value="">Seleziona...</option>
+                                         {% for opt in foreign_keys[colName] %}
+                                             <option value="{{ opt.id }}" {{ value == opt.id ? 'selected' : '' }}>{{ opt.nome }}</option>
+                                         {% endfor %}
+                                     </select>
+                                {% elseif 'text' in colType or ('varchar' in colType and col.Type|replace({'varchar': '', '(': '', ')': ''}) > 255) %}
+                                     {# Quill Editor Config #}
+                                     <div class="quill-editor-container">
+                                         <div id="editor_{{ colName }}" style="height: 200px;">
+                                             {{ value|raw }}
+                                         </div>
+                                         <input type="hidden" name="{{ colName }}" id="input_{{ colName }}">
+                                     </div>
+                                {% elseif 'int' in colType or 'double' in colType or 'float' in colType %}
+                                     <input type="number" step="any" class="form-control" id="{{ colName }}" name="{{ colName }}" value="{{ value }}" {{ col.Null == 'NO' ? 'required' : '' }}>
+                                {% elseif 'datetime' in colType or 'timestamp' in colType %}
+                                     <input type="datetime-local" class="form-control" id="{{ colName }}" name="{{ colName }}" value="{{ value ? value|date('Y-m-d\\TH:i') : '' }}">
+                                {% else %}
+                                     <input type="text" class="form-control" id="{{ colName }}" name="{{ colName }}" value="{{ value }}">
+                                {% endif %}
+                                
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+
+                    {# Relazioni N:N Checkboxes #}
+                    {% if relations %}
+                        <hr>
+                        {% for key, rel in relations %}
+                        <div class="mb-4">
+                            <h5>{{ rel.label }}</h5>
+                            <div class="row">
+                                {% for opt in rel.options %}
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" 
+                                               name="relations[{{ key }}][]" 
+                                               value="{{ attribute(opt, rel.value_key) }}" 
+                                               id="rel_{{ key }}_{{ attribute(opt, rel.value_key) }}"
+                                               {{ attribute(opt, rel.value_key) in rel.selected ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="rel_{{ key }}_{{ attribute(opt, rel.value_key) }}">
+                                            {{ attribute(opt, rel.label_key) }}
+                                        </label>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="admin.php?entity={{ current_entity }}" class="btn btn-secondary">Annulla</a>
+                        <button type="submit" class="btn btn-primary">Salva</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Find all editor containers
+        var editors = document.querySelectorAll('[id^="editor_"]');
+        
+        editors.forEach(function(editorDiv) {
+            var colName = editorDiv.id.replace('editor_', '');
+            var input = document.getElementById('input_' + colName);
+            
+            var quill = new Quill(editorDiv, {
+                theme: 'snow'
+            });
+
+            // On form submit, populate hidden input with HTML content
+            var form = editorDiv.closest('form');
+            form.addEventListener('submit', function() {
+                input.value = quill.root.innerHTML;
+            });
+        });
+    });
+</script>
+{% endblock %}

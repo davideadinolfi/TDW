@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Creato il: Gen 08, 2026 alle 16:24
+-- Creato il: Feb 02, 2026 alle 21:07
 -- Versione del server: 9.1.0
 -- Versione PHP: 8.3.14
 
@@ -251,24 +251,26 @@ INSERT INTO `ordini` (`id`, `id_utente`, `id_corriere`, `created_at`) VALUES
 DROP TABLE IF EXISTS `prodotti`;
 CREATE TABLE IF NOT EXISTS `prodotti` (
   `id` int NOT NULL AUTO_INCREMENT,
+  `id_tipo` int NOT NULL,
   `id_venditore` int NOT NULL,
   `nome` varchar(64) NOT NULL,
   `descrizione` varchar(1024) DEFAULT NULL,
   `prezzo` double NOT NULL,
   `immagine` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `id_venditore` (`id_venditore`)
+  KEY `id_venditore` (`id_venditore`),
+  KEY `id_tipo` (`id_tipo`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dump dei dati per la tabella `prodotti`
 --
 
-INSERT INTO `prodotti` (`id`, `id_venditore`, `nome`, `descrizione`, `prezzo`, `immagine`) VALUES
-(1, 3, 'i7 10700k', 'Intel Core i7-10700 processore 25 MB Cache intelligente', 250, 'i7.png'),
-(2, 1, 'AMD Ryzen™ 7 5800X', 'AMD Ryzen™ 7 5800X', 225, '51HqC0rU9HL.png'),
-(3, 2, 'RTX 5080', 'ASUS PRIME NVIDIA GeForce RTX 5080 OC Edition, Scheda Grafica 16 GB GDDR7, 256 Bit', 1000, 'msi-geforce-rtx-5080-16g-gaming-trio-oc_1517054_926954.png'),
-(4, 1, 'rx 580', 'Radeon RX 580 GAMING X 8G', 15, 'rx580.png');
+INSERT INTO `prodotti` (`id`, `id_tipo`, `id_venditore`, `nome`, `descrizione`, `prezzo`, `immagine`) VALUES
+(1, 1, 3, 'i7 10700k', 'Intel Core i7-10700 processore 25 MB Cache intelligente', 250, 'i7.png'),
+(2, 1, 1, 'AMD Ryzen™ 7 5800X', 'AMD Ryzen™ 7 5800X', 225, '51HqC0rU9HL.png'),
+(3, 2, 2, 'RTX 5080', 'ASUS PRIME NVIDIA GeForce RTX 5080 OC Edition, Scheda Grafica 16 GB GDDR7, 256 Bit', 1000, 'msi-geforce-rtx-5080-16g-gaming-trio-oc_1517054_926954.png'),
+(4, 2, 1, 'rx 580', 'Radeon RX 580 GAMING X 8G', 15, 'rx580.png');
 
 -- --------------------------------------------------------
 
@@ -524,7 +526,8 @@ ALTER TABLE `ordini`
 --
 ALTER TABLE `prodotti`
   ADD CONSTRAINT `prodotti_ibfk_1` FOREIGN KEY (`id_venditore`) REFERENCES `venditori` (`id`),
-  ADD CONSTRAINT `prodotti_ibfk_2` FOREIGN KEY (`id_venditore`) REFERENCES `venditori` (`id`);
+  ADD CONSTRAINT `prodotti_ibfk_2` FOREIGN KEY (`id_venditore`) REFERENCES `venditori` (`id`),
+  ADD CONSTRAINT `prodotti_ibfk_3` FOREIGN KEY (`id_tipo`) REFERENCES `tipi` (`id`);
 
 --
 -- Limiti per la tabella `recensioni_prodotti`
