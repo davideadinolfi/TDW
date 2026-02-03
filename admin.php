@@ -78,7 +78,10 @@ if ($entity && in_array($entity, $allowedTables)) {
         if ($action === 'list') {
             $stmt = $pdo->query("SELECT * FROM $entity");
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            $columns = !empty($rows) ? array_keys($rows[0]) : getTableColumns($pdo, $entity); // Helper function needed or use DESCRIBE
+            $columns = !empty($rows) ? array_keys($rows[0]) : getTableColumns($pdo, $entity);
+
+            // Fetch full column info for type detection in view
+            $columnsInfo = getTableColumnsInfo($pdo, $entity);
 
 
             // --- GENERIC FK LOADING FOR LIST ---
@@ -97,6 +100,8 @@ if ($entity && in_array($entity, $allowedTables)) {
             }
 
             $data['columns'] = $columns;
+            // Map types for easier lookup in Twig: [field => type]
+            $data['col_types'] = array_column($columnsInfo, 'Type', 'Field');
             $data['rows'] = $rows;
             $data['fk_map'] = $fk_map;
 
@@ -172,7 +177,8 @@ if ($entity && in_array($entity, $allowedTables)) {
                 // Fetch options [id, label]
                 // Note: we fetch as Assoc to match the expected format in form.twig: opt.id, opt.nome (aliased as)
                 $stmt = $pdo->query("SELECT id, $labelField as nome FROM $refTable");
-                $relations['foreign_keys'][$myCol] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                // Store in $data['foreign_keys'] directly, not in $relations['foreign_keys']
+                $data['foreign_keys'][$myCol] = $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
 
             $data['row'] = $row;

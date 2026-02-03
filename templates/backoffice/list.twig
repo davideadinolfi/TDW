@@ -35,6 +35,9 @@
                                             {% elseif fk_map[col] is defined %}
                                                 {# Use generic FK map #}
                                                 {{ fk_map[col][attribute(row, col)] ?? attribute(row, col) }}
+                                            {% elseif 'text' in col_types[col] or ('varchar' in col_types[col] and col_types[col]|replace({'varchar': '', '(': '', ')': ''}) > 255) %}
+                                                {# Rich text content - strip tags for preview or render raw? Request said "render ... without items like <p>" meaning render the HTML #}
+                                                {{ attribute(row, col)|raw }}
                                             {% else %}
                                                 {{ attribute(row, col) }}
                                             {% endif %}

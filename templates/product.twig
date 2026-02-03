@@ -10,7 +10,7 @@
             <h2>{{ prodotto.nome }}</h2>
             
             {# nl2br è sostituito dal filtro 'nl2br' di Twig; Twig auto-escape il contenuto #}
-            <p>{{ prodotto.descrizione|nl2br }}</p>
+            {{ prodotto.descrizione|raw }}
 
             {# SEZIONE SPECIFICHE #}
             {% if specifiche is not empty %}
